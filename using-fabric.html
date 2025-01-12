@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/4.5.0/fabric.min.js"></script>
+</head>
+<body>
+
+    <div>
+        <label for="fixed">Fixed Photo</label>
+        <input type="file" id="fixed" accept="image">
+    </div>
+
+    <div>
+        <label for="logo">Upload Company Logo</label>
+        <input type="file" id="logo" accept="image">
+    </div>
+
+    <canvas id="myCanvas" height="500" width="500" style="border: 1px solid black; margin-top: 20px;"></canvas>
+
+    <script>
+        // Initialize Fabric.js canvas
+        const canvas = new fabric.Canvas('myCanvas');
+
+        document.getElementById('fixed').addEventListener('change', function (event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                
+                reader.onload = function (e) {
+                    fabric.Image.fromURL(e.target.result, function (bgImage) {
+                        bgImage.set({
+                            left: 0,  // Position at the top-left corner
+                            top: 0,
+                            scaleX: canvas.width / bgImage.width, // Scale to fit canvas
+                            scaleY: canvas.height / bgImage.height
+                        });
+
+                        canvas.setBackgroundImage(bgImage, canvas.renderAll.bind(canvas)); // Set background image
+                    });
+                };
+
+                reader.readAsDataURL(file); // Read the background image
+            }
+        });
+
+
+        // Handle the file input change event
+        document.getElementById('logo').addEventListener('change', function (event) {
+            const file = event.target.files[0];  // Get the uploaded file
+            if (file) {
+                const reader = new FileReader();
+
+                // Read the file as a data URL
+                reader.onload = function (e) {
+                    // Create a Fabric.js image from the data URL
+                    fabric.Image.fromURL(e.target.result, function (img) {
+                        img.set({
+                            left: 50,  // Initial position
+                            top: 50,
+                            scaleX: 0.5, // Scale the logo to fit on the canvas
+                            scaleY: 0.5
+                        });
+
+                        // Add the image to the canvas
+                        // canvas.clear(); // Clear the canvas before adding a new image
+                        canvas.add(img);
+
+                        // Optionally, select the logo for interaction
+                        canvas.setActiveObject(img);
+                    });
+                };
+
+                reader.readAsDataURL(file);  // Start reading the file
+            }
+        });
+
+
+                // Listen for the delete key press
+    window.addEventListener('keydown', function (event) {
+            if (event.key === 'Delete') {
+                const activeObject = canvas.getActiveObject();
+                if (activeObject) {
+                    // Remove the selected object (logo) from the canvas
+                    canvas.remove(activeObject);
+                }
+            }
+        });
+
+    </script>
+</body>
+</html>
