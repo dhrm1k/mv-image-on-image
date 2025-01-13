@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>v5</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/4.5.0/fabric.min.js"></script>
+</head>
+<body>
+
+    <div>
+        <label for="fixed">Fixed Photo</label>
+        <input type="file" id="fixed" accept="image">
+    </div>
+
+    <br/>
+
+    <div>
+        <label for="logo">Upload Company Logo</label>
+        <input type="file" id="logo" accept="image">
+    </div>
+
+    <br/>
+
+    <div>
+        <label for="texton">Enter text: </label>
+        <input type="text" id="texton" accept="text">
+
+        <button id="add-text">Add text</button>
+    </div>
+
+    <br/>
+
+    <canvas id="myCanvas" height="500" width="500" style="border: 1px solid black; margin-top: 20px;"></canvas>
+
+    <script>
+        // Initialize Fabric.js canvas
+        const canvas = new fabric.Canvas('myCanvas');
+
+        // Load background image
+        document.getElementById('fixed').addEventListener('change', function (event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+
+                reader.onload = function (e) {
+                    fabric.Image.fromURL(e.target.result, function (bgImage) {
+                        bgImage.set({
+                            left: 0,
+                            top: 0,
+                            scaleX: canvas.width / bgImage.width,
+                            scaleY: canvas.height / bgImage.height
+                        });
+
+                        canvas.setBackgroundImage(bgImage, canvas.renderAll.bind(canvas));
+                    });
+                };
+
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Upload and add company logo
+        document.getElementById('logo').addEventListener('change', function (event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+
+                reader.onload = function (e) {
+                    fabric.Image.fromURL(e.target.result, function (img) {
+                        img.set({
+                            left: 50,
+                            top: 50,
+                            scaleX: 0.5,
+                            scaleY: 0.5
+                        });
+
+                        canvas.add(img);
+                        canvas.setActiveObject(img);
+                    });
+                };
+
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Add text to canvas
+        document.getElementById('add-text').addEventListener('click', function () {
+    const textInput = document.getElementById('texton').value;
+    if (textInput.trim() !== '') {
+        const text = new fabric.Textbox(textInput, { // Use Textbox for better editing support
+            left: 100,
+            top: 100,
+            fontSize: 24,
+            fill: '#000', // Text color
+            fontFamily: 'Arial',
+            editable: true, // Make the text editable
+        });
+
+        canvas.add(text);
+        canvas.setActiveObject(text);
+
+        // Optional: Automatically focus and activate editing
+        text.enterEditing();
+        text.selectAll();
+    } else {
+        alert('Please enter text before adding it.');
+    }
+});
+        // Delete selected object using the Delete key
+        window.addEventListener('keydown', function (event) {
+            if (event.key === 'Delete') {
+                const activeObject = canvas.getActiveObject();
+                if (activeObject) {
+                    canvas.remove(activeObject);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
