@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PromoCraft Editor</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/4.5.0/fabric.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Roboto:wght@400;500;700&family=Open+Sans&family=Lobster&family=Pacifico&family=Monoton&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        body {
+            background: #fff;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+            font-family: 'Playfair Display', serif;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.2rem;
+        }
+
+        .tools-panel {
+            flex: 1;
+            min-width: 300px;
+            background: #fff;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            border: 1px solid #eee;
+        }
+
+        .canvas-panel {
+            flex: 2;
+            min-width: 500px;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .tool-group {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .tool-group:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .tool-group h3 {
+            color: #333;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .file-input-label {
+            display: block;
+            padding: 0.8rem 1rem;
+            background: #f7f7f7;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #555;
+            margin-bottom: 0.5rem;
+        }
+
+        .file-input-label:hover {
+            background: #ff7f6a;
+            color: white;
+            border-color: #ff7f6a;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .text-controls {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            min-width: 150px;
+            padding: 0.8rem;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        input[type="text"]:focus {
+            border-color: #ff7f6a;
+        }
+
+        select {
+            padding: 0.8rem;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            outline: none;
+            cursor: pointer;
+            background: white;
+            min-width: 120px;
+        }
+
+        input[type="color"] {
+            width: 42px;
+            height: 42px;
+            padding: 0;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .action-button {
+            background: #ff7f6a;
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background 0.3s ease;
+        }
+
+        .action-button:hover {
+            background: #ff6347;
+        }
+
+        .download-button {
+            align-self: flex-end;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #ff7f6a;
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .download-button:hover {
+            background: #ff6347;
+            transform: translateY(-2px);
+        }
+
+        #myCanvas {
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            background: white;
+            border: 1px solid #eee;
+        }
+
+        .hint {
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>PromoCraft Editor</h1>
+        <p>Create mockups for your business.</p>
+    </div>
+
+    <div class="container">
+        <div class="tools-panel">
+            <div class="tool-group">
+                <h3>Background Image</h3>
+                <label class="file-input-label" for="fixed">
+                    Choose Background Image
+                    <input type="file" id="fixed" accept="image/*">
+                </label>
+            </div>
+
+            <div class="tool-group">
+                <h3>Company Logo</h3>
+                <label class="file-input-label" for="logo">
+                    Upload Logo
+                    <input type="file" id="logo" accept="image/*">
+                </label>
+            </div>
+
+            <div class="tool-group">
+                <h3>Add Text</h3>
+                <div class="text-controls">
+                    <input type="text" id="texton" placeholder="Enter your text">
+                    <select id="font-selector">
+                        <!-- Options will be dynamically generated -->
+                    </select>
+                    <input type="color" id="color-picker" value="#000000" title="Choose text color">
+                    <button class="action-button" id="add-text">Add</button>
+                </div>
+                <p class="hint">Press Delete key to remove selected elements</p>
+            </div>
+        </div>
+        
+        <div class="canvas-panel">
+            <canvas id="myCanvas" height="500" width="500"></canvas>
+            <button class="download-button" id="download">
+                Download Design
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const canvas = new fabric.Canvas('myCanvas');
+
+        const fonts = [
+            { name: 'Roboto', css: 'Roboto' },
+            { name: 'Open Sans', css: 'Open Sans' },
+            { name: 'Lobster', css: 'Lobster' },
+            { name: 'Pacifico', css: 'Pacifico' },
+            { name: 'Monoton', css: 'Monoton' }
+        ];
+
+        const fontSelector = document.getElementById('font-selector');
+        fonts.forEach(font => {
+            const option = document.createElement('option');
+            option.value = font.css;
+            option.textContent = font.name;
+            option.style.fontFamily = font.css;
+            fontSelector.appendChild(option);
+        });
+
+        document.getElementById('fixed').addEventListener('change', function (event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    fabric.Image.fromURL(e.target.result, function (bgImage) {
+                        bgImage.set({
+                            left: 0,
+                            top: 0,
+                            scaleX: canvas.width / bgImage.width,
+                            scaleY: canvas.height / bgImage.height
+                        });
+                        canvas.setBackgroundImage(bgImage, canvas.renderAll.bind(canvas));
+                    });
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        document.getElementById('logo').addEventListener('change', function (event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    fabric.Image.fromURL(e.target.result, function (img) {
+                        img.set({ left: 50, top: 50, scaleX: 0.5, scaleY: 0.5 });
+                        canvas.add(img);
+                        canvas.setActiveObject(img);
+                    });
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        document.getElementById('add-text').addEventListener('click', function () {
+            const textInput = document.getElementById('texton').value;
+            const selectedFont = document.getElementById('font-selector').value;
+            const selectedColor = document.getElementById('color-picker').value;
+
+            if (textInput.trim() !== '') {
+                const text = new fabric.Textbox(textInput, {
+                    left: 100,
+                    top: 100,
+                    fontSize: 24,
+                    fill: selectedColor,
+                    fontFamily: selectedFont,
+                    editable: true
+                });
+
+                canvas.add(text);
+                canvas.setActiveObject(text);
+                canvas.renderAll();
+            } else {
+                alert('Please enter text before adding it.');
+            }
+        });
+
+        document.getElementById('download').addEventListener('click', function() {
+            const dataURL = canvas.toDataURL({
+                format: 'png',
+                quality: 1
+            });
+
+            const link = document.createElement('a');
+            link.download = 'promocraft-design.png';
+            link.href = dataURL;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        });
+
+        window.addEventListener('keydown', function (event) {
+            if (event.key === 'Delete') {
+                const activeObject = canvas.getActiveObject();
+                if (activeObject) {
+                    canvas.remove(activeObject);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
